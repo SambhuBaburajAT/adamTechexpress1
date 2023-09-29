@@ -1,5 +1,6 @@
 const { default: mongoose } = require("mongoose");
 const { UserModel } = require("../model/UserData");
+const path = require('path');
 const fs = require('fs');
 const GetProfile = async (req, res) => {
   const User = req.LoggeDInUser;
@@ -15,7 +16,7 @@ const ProfileManage = async (req, res) => {
   const userId = new mongoose.Types.ObjectId(req.LoggeDInUser._id);
 
   if (Name.trim() != "") {
-    
+  
     console.log(Name);
     console.log(userId);
    
@@ -24,7 +25,14 @@ const ProfileManage = async (req, res) => {
   if (req.file) {
     const prevImage =await  UserModel.findById(userId);
     console.log(prevImage);
-    
+
+    fs.unlink(`public/images/${prevImage.image}`, (err) => {
+      if (err) {
+        console.error('Error deleting old image:', err);
+      } else {
+        console.log('Old image deleted successfully');
+      }
+    });
   
     await UserModel.findByIdAndUpdate(userId, { image: req.file.filename });
   }
